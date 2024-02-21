@@ -34,12 +34,18 @@
       </div>
     </div>
     <form>
-      <label title="first value">Left value: </label>
-      <br>
-      <textarea id="area" rows="8"></textarea>
-      <label title="second value">Right value: </label>
-      <br>
-      <textarea id="area-right" rows="8"></textarea>
+      <div class="split-parent">
+        <div class="split">
+          <label title="first value">Left value: </label>
+          <br>
+          <textarea id="area" rows="8"></textarea>
+        </div>
+        <div class="split">
+          <label title="second value">Right value: </label>
+          <br>
+          <textarea id="area-right" rows="8"></textarea>
+        </div>
+      </div>
       <br>
       <br>
       <label title="can be slow with big files"><input type="checkbox" id="wantDef" checked="checked"> with definitions</label>
