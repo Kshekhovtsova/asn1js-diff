@@ -13,11 +13,13 @@ const
     maxLength = 10240,
     reHex = /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/,
     tree = id('tree'),
+    treeRight = id('tree-right'),
     dump = id('dump'),
     wantHex = checkbox('wantHex'),
     trimHex = checkbox('trimHex'),
     wantDef = checkbox('wantDef'),
     area = id('area'),
+    areaRight = id('area-right'),
     file = id('file'),
     examples = id('examples'),
     selectTheme = id('theme-select'),
@@ -25,6 +27,7 @@ const
     selectTag = id('tags');
 
 let hash = null;
+let querystring = null;
 
 if (!window.console || !window.console.log) // IE8 with closed developer tools
     window.console = { log: function () {} };
@@ -43,13 +46,14 @@ function checkbox(name) {
     el.onchange = () => localStorage.setItem(name, el.checked);
     return el;
 }
-function show(asn1) {
-    tree.innerHTML = '';
-    dump.innerHTML = '';
-    tree.appendChild(asn1.toDOM());
-    if (wantHex.checked) dump.appendChild(asn1.toHexDOM(undefined, trimHex.checked));
+function show(treeObj, asn1) {
+    treeObj.innerHTML = '';
+    //dump.innerHTML = '';
+    console.log(asn1);
+    treeObj.appendChild(asn1.toDOM());
+    //if (wantHex.checked) dump.appendChild(asn1.toHexDOM(undefined, trimHex.checked));
 }
-function decode(der, offset) {
+function decode(treeObj, der, offset) {
     offset = offset || 0;
     try {
         const asn1 = ASN1DOM.decode(der, offset);
@@ -74,23 +78,26 @@ function decode(der, offset) {
                 for (const t of types) {
                     if (t.element == selectDefs.selectedOptions[0]) {
                         Defs.match(asn1, t.type);
-                        show(asn1);
+                        show(treeObj, asn1);
                         return;
                     }
                 }
                 Defs.match(asn1, null);
-                show(asn1);
+                show(treeObj, asn1);
             };
         } else
             selectDefs.innerHTML = '<option>no definition</option>';
-        show(asn1);
+        show(treeObj, asn1);
         let b64 = der.length < maxLength ? asn1.toB64String() : '';
-        if (area.value === '') area.value = Base64.pretty(b64);
-        try {
-            window.location.hash = hash = '#' + b64;
-        } catch (e) {
-            // fails with "Access Denied" on IE with URLs longer than ~2048 chars
-            window.location.hash = hash = '#';
+
+        // TODO: remove hash
+        if (hash) {
+            try {
+                window.location.hash = hash = '#' + b64;
+            } catch (e) {
+                // fails with "Access Denied" on IE with URLs longer than ~2048 chars
+                window.location.hash = hash = '#';
+            }
         }
         let endOffset = asn1.posEnd();
         if (endOffset < der.length) {
@@ -99,19 +106,43 @@ function decode(der, offset) {
             let button = document.createElement('button');
             button.innerText = 'try to decode';
             button.onclick = function () {
-                decode(der, endOffset);
+                decode(treeObj, der, endOffset);
             };
             p.appendChild(button);
             tree.insertBefore(p, tree.firstChild);
         }
+        return b64;
     } catch (e) {
         text(tree, e);
+        return null;
     }
 }
 function decodeText(val) {
     try {
         let der = reHex.test(val) ? Hex.decode(val) : Base64.unarmor(val);
-        decode(der);
+        let b64 = decode(tree, der);
+        if (b64 && area.value === '') area.value = Base64.pretty(b64);
+    } catch (e) {
+        text(tree, e);
+        dump.innerHTML = '';
+    }
+}
+function decodeTexts(left, right) {
+    try {
+        let derLeft = reHex.test(left) ? Hex.decode(left) : Base64.unarmor(left);
+        let derRight = reHex.test(right) ? Hex.decode(right) : Base64.unarmor(right);
+        let b64Left = decode(tree, derLeft);
+        let b64Right = decode(treeRight, derRight);
+        if (b64Left && b64Right) {
+            try {
+                querystring = '?left=' + b64Left + '&right=' + b64Right;
+                window.history.replaceState(null, null, querystring);
+            } catch (e) {
+                console.log("Failed to replace querystring");
+            }
+            if (area.value === '') area.value = Base64.pretty(b64Left);
+            if (areaRight.value === '') areaRight.value = Base64.pretty(b64Right);
+        }
     } catch (e) {
         text(tree, e);
         dump.innerHTML = '';
@@ -123,7 +154,7 @@ function decodeBinaryString(str) {
         if (reHex.test(str)) der = Hex.decode(str);
         else if (Base64.re.test(str)) der = Base64.unarmor(str);
         else der = str;
-        decode(der);
+        decode(tree, der);
     } catch (e) {
         text(tree, 'Cannot decode file.');
         dump.innerHTML = '';
@@ -131,14 +162,18 @@ function decodeBinaryString(str) {
 }
 // set up buttons
 id('butDecode').onclick = function () {
-    decodeText(area.value);
+    // decodeText(area.value);
+    decodeTexts(area.value, areaRight.value);
 };
 id('butClear').onclick = function () {
     area.value = '';
+    areaRight.value = '';
     file.value = '';
     tree.innerHTML = '';
+    treeRight.innerHTML = '';
     dump.innerHTML = '';
     hash = window.location.hash = '';
+    querystring = window.location.search = '';
 };
 id('butExample').onclick = function () {
     console.log('Loading example:', examples.value);
@@ -206,6 +241,17 @@ function loadFromHash() {
         if (val.length) decodeText(val);
     }
 }
+function loadFromQueryStringOrHash() {
+    if (window.location.search && window.location.search != querystring) {
+        querystring = window.location.search;
+        const urlParams = new URLSearchParams(querystring);
+        let leftVal = urlParams.get('left');
+        let rightVal = urlParams.get('right');
+        if (leftVal && rightVal && leftVal.length && rightVal.length) decodeTexts(leftVal, rightVal);
+    } else {
+        //loadFromHash();
+    }
+}
 function stop(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -215,8 +261,9 @@ function dragAccept(e) {
     if (e.dataTransfer.files.length > 0) read(e.dataTransfer.files[0]);
 }
 // main
-if ('onhashchange' in window) window.onhashchange = loadFromHash;
-loadFromHash();
+//if ('onhashchange' in window) window.onhashchange = loadFromHash;
+//loadFromHash();
+loadFromQueryStringOrHash();
 document.ondragover = stop;
 document.ondragleave = stop;
 if ('FileReader' in window && 'readAsBinaryString' in new FileReader()) {

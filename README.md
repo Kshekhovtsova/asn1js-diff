@@ -1,53 +1,14 @@
-asn1js
+asn1js-diff
 ======
+This is a fork of the popular https://lapo.it/asn1js/ tool which allows to view a diff of two ASN.1 structures side-by-side (work in progress).
 
 asn1js is a JavaScript generic ASN.1 parser/decoder that can decode any valid ASN.1 DER or BER structures.
 
-An example page that can decode Base64-encoded (raw base64, PEM armoring and `begin-base64` are recognized) or Hex-encoded (or local files with some browsers) is included and can be used both [online on the official website](https://lapo.it/asn1js/) or [offline (ZIP file)](https://lapo.it/asn1js/asn1js.zip).
+Usage 
+-----------
+[asn1js-diff on GitHub Pages](https://kshekhovtsova.github.io/asn1js-diff/)
 
-Usage with `npm` / `yarn`
--------------------------
-
-This package can be installed with either npm or yarn via the following commands:
-
-```sh
-npm install @lapo/asn1js
-# or with yarn
-yarn add @lapo/asn1js
-```
-
-Assuming a standard javascript bundler is setup you can import it like so:
-
-```js
-const ASN1 = require('@lapo/asn1js');
-// or with ES modules
-import ASN1 from '@lapo/asn1js';
-```
-
-A submodule of this package can also be imported:
-
-```js
-const Hex = require('@lapo/asn1js/hex');
-// or with ES modules
-import Hex from '@lapo/asn1js/hex';
-```
-
-Usage with RequireJS
---------------------
-
-Can be [tested on JSFiddle](https://jsfiddle.net/lapo/tmdq35ug/).
-
-```html
-<script type="text/javascript" src="https://unpkg.com/requirejs/require.js"></script>
-<script>
-require([
-  'https://unpkg.com/@lapo/asn1js/asn1.js',
-  'https://unpkg.com/@lapo/asn1js/hex.js'
-], function(ASN1, Hex) {
-  document.body.innerText = ASN1.decode(Hex.decode('06032B6570')).content();
-});
-</script>
-```
+You can load two ASN.1 structures by passing base64 values to `left` and `right` query parameters: [https://kshekhovtsova.github.io/asn1js-diff/?left=<example_cert1>&right=<example_cert2>](https://kshekhovtsova.github.io/asn1js-diff/?left=MIIBfzCCATGgAwIBAgIUfI5kSdcO2S0-LkpdL3b2VUJG10YwBQYDK2VwMDUxCzAJBgNVBAYTAklUMQ8wDQYDVQQHDAZNaWxhbm8xFTATBgNVBAMMDFRlc3QgZWQyNTUxOTAeFw0yMDA5MDIxMzI1MjZaFw0zMDA5MDIxMzI1MjZaMDUxCzAJBgNVBAYTAklUMQ8wDQYDVQQHDAZNaWxhbm8xFTATBgNVBAMMDFRlc3QgZWQyNTUxOTAqMAUGAytlcAMhADupL_3LF2beQKKS95PeMPgKI6gxIV3QB9hjJC7_aCGFo1MwUTAdBgNVHQ4EFgQUa6W9z536I1l4EmQXrh5y2JqASugwHwYDVR0jBBgwFoAUa6W9z536I1l4EmQXrh5y2JqASugwDwYDVR0TAQH_BAUwAwEB_zAFBgMrZXADQQBvc3e-KJZaMzbX5TT9kPP9QH8fAvkAV_IWDxZrBL9lhLaY0tDSv0zWbw624uidBKPgmVD5wm3ec60dNVeFZYYG&right=MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA_MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMTDkRTVCBSb290IENBIFgzMB4XDTE2MDMxNzE2NDA0NloXDTIxMDMxNzE2NDA0NlowSjELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUxldCdzIEVuY3J5cHQxIzAhBgNVBAMTGkxldCdzIEVuY3J5cHQgQXV0aG9yaXR5IFgzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnNMM8FrlLke3cl03g7NoYzDq1zUmGSXhvb418XCSL7e4S0EFq6meNQhY7LEqxGiHC6PjdeTm86dicbp5gWAf15Gan_PQeGdxyGkOlZHP_uaZ6WA8SMx-yk13EiSdRxta67nsHjcAHJyse6cF6s5K671B5TaYucv9bTyWaN8jKkKQDIZ0Z8h_pZq4UmEUEz9l6YKHy9v6Dlb2honzhT-Xhq-w3Brvaw2VFn3EK6BlspkENnWAa6xK8xuQSXgvopZPKiAlKQTGdMDQMc2PMTiVFrqoM7hD8bEfwzB_onkxEz0tNvjj_PIzark5McWvxI0NHWQWM6r6hCm21AvA2H3DkwIDAQABo4IBfTCCAXkwEgYDVR0TAQH_BAgwBgEB_wIBADAOBgNVHQ8BAf8EBAMCAYYwfwYIKwYBBQUHAQEEczBxMDIGCCsGAQUFBzABhiZodHRwOi8vaXNyZy50cnVzdGlkLm9jc3AuaWRlbnRydXN0LmNvbTA7BggrBgEFBQcwAoYvaHR0cDovL2FwcHMuaWRlbnRydXN0LmNvbS9yb290cy9kc3Ryb290Y2F4My5wN2MwHwYDVR0jBBgwFoAUxKexpHsscfrb4UuQdf_EFWCFiRAwVAYDVR0gBE0wSzAIBgZngQwBAgEwPwYLKwYBBAGC3xMBAQEwMDAuBggrBgEFBQcCARYiaHR0cDovL2Nwcy5yb290LXgxLmxldHNlbmNyeXB0Lm9yZzA8BgNVHR8ENTAzMDGgL6AthitodHRwOi8vY3JsLmlkZW50cnVzdC5jb20vRFNUUk9PVENBWDNDUkwuY3JsMB0GA1UdDgQWBBSoSmpjBH3duubRObemRWXv86jsoTANBgkqhkiG9w0BAQsFAAOCAQEA3TPXEfNjWDjdGBX7CVW-dla5cEilaUcne8IkCJLxWh9KEik3JHRRHGJouM2VcGfl96S8TihRzZvoroed6ti6WqEBmtzw3Wodatg-VyOeph4EYpr_1wXKtx8_wApIvJSwtmVi4MFU5aMqrSDE6ea73Mj2tcMyo5jMd6jmeWUHK8so_joWUoHOUgwuX4Po1QYz-3dszkDqMp4fklxBwXRsW10KXzPMTZ-sOPAveyxindmjkW8lGy-QsRlGPfZ-G6Z6h7mjem0Y-iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M-X-Q7UNKEkROb3N6KOqkqm57TH2H3eDJAkSnh6_DNFu0Qg)
 
 ISC license
 -----------
@@ -71,7 +32,7 @@ credits
 
 links
 -----
-
+- [asn1js-diff on GitHub Pages](https://kshekhovtsova.github.io/asn1js-diff/)
 - [official website](https://lapo.it/asn1js/)
 - [dedicated domain](https://asn1js.eu/)
 - [InDefero tracker](http://idf.lapo.it/p/asn1js/)

@@ -24,20 +24,32 @@
     </div>
   </header>
   <div id="main-page">
-    <div>
-      <div id="dump"></div>
-      <div id="tree"></div>
+    <div class="split-parent">
+      <div class="split">
+        <div id="dump"></div>
+        <div id="tree"></div>
+      </div>
+      <div class="split">
+        <div id="tree-right"></div>
+      </div>
     </div>
     <form>
+      <label title="first value">Left value: </label>
+      <br>
       <textarea id="area" rows="8"></textarea>
+      <label title="second value">Right value: </label>
+      <br>
+      <textarea id="area-right" rows="8"></textarea>
       <br>
       <br>
-      <label title="can be slow with big files"><input type="checkbox" id="wantHex" checked="checked"> with hex dump</label>
-      <label title="can be slow with big files"><input type="checkbox" id="trimHex" checked="checked"> trim big chunks</label>
       <label title="can be slow with big files"><input type="checkbox" id="wantDef" checked="checked"> with definitions</label>
-      <input id="butDecode" type="button" value="decode">
       <br><br>
-      <table>
+      <input id="butDecode" type="button" value="decode">
+
+      <!-- TODO -->
+      <label style="visibility: hidden !important;" title="can be slow with big files"><input type="checkbox" id="wantHex" checked="checked"> with hex dump</label>
+      <label style="visibility: hidden !important;" title="can be slow with big files"><input type="checkbox" id="trimHex" checked="checked"> trim big chunks</label>
+      <table style="visibility: hidden !important;">
         <tr><td>Drag or load file:</td><td><input type="file" id="file"></td></tr>
         <tr><td>Load examples:</td><td>
           <select id="examples">

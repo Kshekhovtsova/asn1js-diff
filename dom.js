@@ -22,7 +22,7 @@
 const
     ASN1 = require('./asn1'),
     oids = require('./oids'),
-    lineLength = 80,
+    lineLength = 40, // decrease length to shorten the width of the both trees
     contentLength = 8 * lineLength,
     DOM = {
         ellipsis: '\u2026',
@@ -98,11 +98,12 @@ class ASN1DOM extends ASN1 {
                         let oidd = DOM.tag('span', 'oid description', oid.d);
                         preview.appendChild(oidd);
                     }
+                    /* hide oid.c in order to shorten the width of the tree
                     if (oid.c) {
                         preview.appendChild(DOM.space());
                         let oidc = DOM.tag('span', 'oid comment', '(' + oid.c + ')');
                         preview.appendChild(oidc);
-                    }
+                    }*/
                 }
             }
             head.appendChild(preview);

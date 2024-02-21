@@ -185,10 +185,26 @@ header {
 .spaces {
     font-size: 0px;
 }
-#tree {
+
+.split-parent {
+  display: flex;
+}
+
+.split {
+    /*width: 700px;
+    display: inline-block;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+#tree, #tree-right {
     font-family: monospace;
 }
-#tree > p {
+#tree > p, #tree-right > p {
     font-family: Arial, Helvetica, sans-serif;
 }
 #dump {
@@ -211,4 +227,4 @@ header {
 #dump .hexCurrent .hex { background-color: #A0A0A0; }
 #dump .hexCurrent .dlen { color: #004040; }
 #file { display: none; }
-#area { width: 100%; }
+#area, #area-right { width: 100%; }
